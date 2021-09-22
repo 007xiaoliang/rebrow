@@ -6,6 +6,7 @@ import time
 from datetime import datetime, timedelta
 import os
 import base64
+import msgpack
 
 app = Flask(__name__)
 
@@ -142,7 +143,7 @@ def server_db(host, port, db):
     List all databases and show info on server
     """
     s = time.time()
-    r = redis.StrictRedis(host=host, port=port, db=0)
+    r = redis.StrictRedis(host=host, port=port, db=0 ,password="Xlqwert109109")
     info = r.info("all")
     dbsize = r.dbsize()
     return render_template('server.html',
@@ -161,7 +162,7 @@ def keys(host, port, db):
     List keys for one database
     """
     s = time.time()
-    r = redis.StrictRedis(host=host, port=port, db=db)
+    r = redis.StrictRedis(host=host, port=port, db=db, password="Xlqwert109109")
     if request.method == "POST":
         action = request.form["action"]
         app.logger.debug(action)
@@ -205,7 +206,7 @@ def key(host, port, db, key):
     """
     key = base64.urlsafe_b64decode(key.encode("utf8"))
     s = time.time()
-    r = redis.StrictRedis(host=host, port=port, db=db)
+    r = redis.StrictRedis(host=host, port=port, db=db, password="Xlqwert109109")
     dump = r.dump(key)
     if dump is None:
         abort(404)
@@ -221,6 +222,8 @@ def key(host, port, db, key):
         val = r.lrange(key, 0, -1)
     elif t == "hash":
         val = r.hgetall(key)
+        for k,v in val.items():
+            val[k] = msgpack.unpackb(v, raw=False)
     elif t == "set":
         val = r.smembers(key)
     elif t == "zset":
@@ -253,7 +256,7 @@ def pubsub(host, port, db):
 
 
 def pubsub_event_stream(host, port, db, pattern):
-    r = redis.StrictRedis(host=host, port=port, db=db)
+    r = redis.StrictRedis(host=host, port=port, db=db, password="Xlqwert109109")
     p = r.pubsub()
     p.psubscribe(pattern)
     for message in p.listen():
