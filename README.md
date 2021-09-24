@@ -25,6 +25,8 @@ Execute this:
     source venv/bin/activate
     pip install -r requirements.txt
     python runserver.py
+    or
+    uwsgi --socket 0.0.0.0:5001 --protocol=http -w wsgi:app
 
 Then open [127.0.0.1:5001](http://127.0.0.1:5001).
 
