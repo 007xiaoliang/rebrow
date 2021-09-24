@@ -143,7 +143,7 @@ def server_db(host, port, db):
     List all databases and show info on server
     """
     s = time.time()
-    r = redis.StrictRedis(host=host, port=port, db=0 ,password="Xlqwert109109")
+    r = redis.StrictRedis(host=host, port=port, db=0)
     info = r.info("all")
     dbsize = r.dbsize()
     return render_template('server.html',
@@ -162,7 +162,7 @@ def keys(host, port, db):
     List keys for one database
     """
     s = time.time()
-    r = redis.StrictRedis(host=host, port=port, db=db, password="Xlqwert109109")
+    r = redis.StrictRedis(host=host, port=port, db=db)
     if request.method == "POST":
         action = request.form["action"]
         app.logger.debug(action)
@@ -206,7 +206,7 @@ def key(host, port, db, key):
     """
     key = base64.urlsafe_b64decode(key.encode("utf8"))
     s = time.time()
-    r = redis.StrictRedis(host=host, port=port, db=db, password="Xlqwert109109")
+    r = redis.StrictRedis(host=host, port=port, db=db)
     dump = r.dump(key)
     if dump is None:
         abort(404)
@@ -256,7 +256,7 @@ def pubsub(host, port, db):
 
 
 def pubsub_event_stream(host, port, db, pattern):
-    r = redis.StrictRedis(host=host, port=port, db=db, password="Xlqwert109109")
+    r = redis.StrictRedis(host=host, port=port, db=db)
     p = r.pubsub()
     p.psubscribe(pattern)
     for message in p.listen():
